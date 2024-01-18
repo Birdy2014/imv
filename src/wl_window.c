@@ -13,6 +13,7 @@
 #include <time.h>
 
 #include <wayland-client.h>
+#include <wayland-cursor.h>
 #include <wayland-egl.h>
 #include <EGL/egl.h>
 #include <GL/gl.h>
@@ -31,6 +32,9 @@ struct imv_window {
   struct wl_seat       *wl_seat;
   struct wl_keyboard   *wl_keyboard;
   struct wl_pointer    *wl_pointer;
+  struct wl_surface    *cursor_surface;
+  struct wl_cursor_image *cursor_image;
+  struct wl_shm        *wl_shm;
   EGLDisplay           egl_display;
   EGLContext           egl_context;
   EGLSurface           egl_surface;
@@ -264,6 +268,8 @@ static void pointer_enter(void *data, struct wl_pointer *pointer,
   window->pointer.y.last = wl_fixed_to_double(surface_y);
   window->pointer.x.current = wl_fixed_to_double(surface_x);
   window->pointer.y.current = wl_fixed_to_double(surface_y);
+
+  wl_pointer_set_cursor(pointer, serial, window->cursor_surface, window->cursor_image->hotspot_x, window->cursor_image->hotspot_y);
 }
 
 static void pointer_leave(void *data, struct wl_pointer *pointer,
@@ -524,6 +530,8 @@ static void on_global(void *data, struct wl_registry *registry, uint32_t id,
     wl_output_set_user_data(output_data->wl_output, output_data);
     wl_output_add_listener(output_data->wl_output, &output_listener, output_data);
     list_append(window->wl_outputs, output_data);
+  } else if (!strcmp(interface, "wl_shm")) {
+    window->wl_shm = wl_registry_bind(registry, id, &wl_shm_interface, 1);
   }
 }
 
@@ -693,6 +701,17 @@ static bool connect_to_wayland(struct imv_window *window)
   return true;
 }
 
+static void create_cursor(struct imv_window *window) {
+  struct wl_cursor_theme *cursor_theme = wl_cursor_theme_load(NULL, 24, window->wl_shm);
+  struct wl_cursor *cursor = wl_cursor_theme_get_cursor(cursor_theme, "left_ptr");
+  window->cursor_image = cursor->images[0];
+  auto* cursor_buffer = wl_cursor_image_get_buffer(window->cursor_image);
+
+  window->cursor_surface = wl_compositor_create_surface(window->wl_compositor);
+  wl_surface_attach(window->cursor_surface, cursor_buffer, 0, 0);
+  wl_surface_commit(window->cursor_surface);
+}
+
 static void create_window(struct imv_window *window, int width, int height,
     const char *title)
 {
@@ -797,6 +816,7 @@ struct imv_window *imv_window_create(int width, int height, const char *title)
     return NULL;
   }
   create_window(window, width, height, title);
+  create_cursor(window);
 
   struct sigevent timer_handler = {
     .sigev_notify = SIGEV_THREAD,

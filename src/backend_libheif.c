@@ -34,7 +34,12 @@ static void load_image(void *raw_private, struct imv_image **image, int *frameti
   int width = heif_image_get_width(private->img, heif_channel_interleaved);
   int height = heif_image_get_height(private->img, heif_channel_interleaved);
   unsigned char *bitmap = malloc(width * height * 4);
-  memcpy(bitmap, data, width * height * 4);
+
+  for (int y = 0; y < height; ++y) {
+    uint8_t *src = &data[y * stride];
+    unsigned char *dest = &bitmap[y * width * 4];
+    memcpy(dest, src, width * 4);
+  }
 
   struct imv_bitmap *bmp = malloc(sizeof *bmp);
   bmp->width = width,

@@ -129,6 +129,7 @@ foreach backend : [
   ['libnsgif', 'dependency', 'libnsgif', '< 1.0.0'],
   ['libheif', 'dependency', 'libheif', []],
   ['libjxl', 'dependency', 'libjxl', []],
+  ['libwebp', 'dependency', 'libwebp', []],
 ]
   _backend_name = backend[0]
   _dep_type = backend[1]

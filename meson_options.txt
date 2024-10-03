@@ -97,3 +97,8 @@ option('libjxl',
   type : 'feature',
   description : 'provides: jxl'
 )
+
+option('libwebp',
+  type : 'feature',
+  description : 'provides: webp'
+)

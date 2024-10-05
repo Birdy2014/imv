@@ -85,6 +85,7 @@ files_common = files(
 
 files_imv = files_common + files(
   'src/main.c',
+  'src/backend_qoi.c'
 )
 
 enabled_window_systems = []

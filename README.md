@@ -1,12 +1,10 @@
-[![builds.sr.ht status](https://builds.sr.ht/~exec64/imv.svg)](https://builds.sr.ht/~exec64/imv?)
 imv - X11/Wayland Image Viewer
 ==============================
 
 `imv` is a command line image viewer intended for use with tiling window managers.
 
-[Project home](https://sr.ht/~exec64/imv/)
-
-imv is currently seeking a new maintainer to adopt it. Please email the author if interested.
+This is my semi-maintained fork with support for more image formats without the deprecated freeimage library.
+The original project can be found at https://sr.ht/~exec64/imv/ .
 
 Features
 --------
@@ -18,8 +16,9 @@ Features
   * Animated GIFs
   * SVG
   * TIFF
-  * Various RAW formats
-  * Photoshop PSD files
+  * QOI
+  * WEBP
+  * HEIF/AVIF
 * Configurable key bindings and behaviour
 * Highly scriptable with IPC via imv-msg
 
@@ -130,16 +129,17 @@ Installation
 | xcb            |          | Optional. Required for X11 support.            |
 | xkbcommon-x11  |          | Optional. Required for X11 support.            |
 | wayland-client |          | Optional. Required for Wayland support.        |
+| wayland-cursor |          | Optional. Required for Wayland support.        |
 | wayland-egl    |          | Optional. Required for Wayland support.        |
 | EGL            |          | Optional. Required for Wayland support.        |
-| FreeImage      |          | Optional. Provides PNG, JPEG, TIFF, GIF, etc.  |
 | libtiff        |          | Optional. Provides TIFF support.               |
 | libpng         |          | Optional. Provides PNG support.                |
 | libjpeg-turbo  |          | Optional. Provides JPEG support.               |
 | librsvg        | >=v2.44  | Optional. Provides SVG support.                |
 | libnsgif       |          | Optional. Provides animated GIF support.       |
-| libheif        |          | Optional. Provides HEIF support.               |
+| libheif        |          | Optional. Provides HEIF and AVIF support.      |
 | libjxl         |          | Optional. Provides JPEGXL support.             |
+| libwebp        |          | Optional. Provides WEBP support.
 
 Dependencies are determined by which backends and window systems are enabled
 when building `imv`. You can find a summary of which backends are available

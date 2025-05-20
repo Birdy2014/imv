@@ -705,7 +705,7 @@ static void create_cursor(struct imv_window *window) {
   struct wl_cursor_theme *cursor_theme = wl_cursor_theme_load(NULL, 24, window->wl_shm);
   struct wl_cursor *cursor = wl_cursor_theme_get_cursor(cursor_theme, "left_ptr");
   window->cursor_image = cursor->images[0];
-  auto* cursor_buffer = wl_cursor_image_get_buffer(window->cursor_image);
+  struct wl_buffer* cursor_buffer = wl_cursor_image_get_buffer(window->cursor_image);
 
   window->cursor_surface = wl_compositor_create_surface(window->wl_compositor);
   wl_surface_attach(window->cursor_surface, cursor_buffer, 0, 0);

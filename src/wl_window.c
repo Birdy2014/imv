@@ -641,7 +641,9 @@ static void toplevel_configure(void *data, struct xdg_toplevel *toplevel,
   }
   size_t buffer_width = window->width * window->scale;
   size_t buffer_height = window->height * window->scale;
-  wl_egl_window_resize(window->egl_window, buffer_width, buffer_height, 0, 0);
+  if (window->egl_window) {
+    wl_egl_window_resize(window->egl_window, buffer_width, buffer_height, 0, 0);
+  }
   glViewport(0, 0, buffer_width, buffer_height);
 
   struct imv_event e = {
@@ -744,12 +746,16 @@ static void create_window(struct imv_window *window, int width, int height,
   xdg_toplevel_set_title(window->wl_xdg_toplevel, title);
   xdg_toplevel_set_app_id(window->wl_xdg_toplevel, "imv");
 
-  window->egl_window = wl_egl_window_create(window->wl_surface, width, height);
-  window->egl_surface = eglCreateWindowSurface(window->egl_display, config, window->egl_window, NULL);
-  eglMakeCurrent(window->egl_display, window->egl_surface, window->egl_surface, window->egl_context);
-
   window->width = width;
   window->height = height;
+  window->egl_window = NULL;
+
+  wl_surface_commit(window->wl_surface);
+  wl_display_roundtrip(window->wl_display);
+
+  window->egl_window = wl_egl_window_create(window->wl_surface, window->width * window->scale, window->height * window->scale);
+  window->egl_surface = eglCreateWindowSurface(window->egl_display, config, window->egl_window, NULL);
+  eglMakeCurrent(window->egl_display, window->egl_surface, window->egl_surface, window->egl_context);
 
   wl_surface_commit(window->wl_surface);
   wl_display_roundtrip(window->wl_display);
